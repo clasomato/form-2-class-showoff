@@ -17,7 +17,7 @@
     </div>
 
     <div id="content">
-      <button @click="signOut">Signout</button>
+      <button @click="signOut" style="position: absolute; top:0; left:0; width:20%; border:none">Signout</button>
       <h1>Welcome</h1>
       <div class="addAnItem">
         <input type="text" placeholder="Name (of work)" id="userWorkName"> <br>
@@ -208,9 +208,29 @@ a {
 }
 
 .showItem {
-  background-color: teal;
+  background-color: #fa695f;
   width: 100%;
   padding: 5%;
   border-radius: 0.25em;
+}
+
+input {
+  border-radius: 0px;
+  border: 1px solid darkgrey;
+  padding: 1% 2%;
+  margin: 0.5%;
+  font-size: 1.2em;
+  width: 40%;
+}
+
+button {
+  background-color: white;
+  border-radius: 0px;
+  border: 1px solid darkgrey;
+  cursor: pointer;
+  font-size: 1.2em;
+  padding: 1% 2%;
+  margin: 0.25%;
+  width: 40%;
 }
 </style>
