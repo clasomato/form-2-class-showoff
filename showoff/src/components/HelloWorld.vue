@@ -30,10 +30,10 @@
       <div class="items">
         <ul id="example-1">
           <li v-for="item in items" :key="item.message">
-            <div class="pet">
+            <div class="showItem">
               <!-- {{ item.id }} -->
               {{ item.userWorkName }} <br>
-              <img alt="" v-bind:src="item.userImageURL" width="100%"> <br>
+              <img alt="" v-bind:src="item.userImageURL" width="20%"> <br>
               {{ item.userAuthor }} <br>
               <a v-bind:href="item.userPortfolioLink" target="_blank">View Portfolio</a>
             </div>
@@ -149,6 +149,7 @@ export default {
       })
         .then(function () {
           console.log('Document successfully written!')
+          location.reload()
         })
         .catch(function (error) {
           console.error('Error writing document: ', error)
@@ -204,5 +205,12 @@ a {
 }
 #login, #content {
   display: none;
+}
+
+.showItem {
+  background-color: teal;
+  width: 100%;
+  padding: 5%;
+  border-radius: 0.25em;
 }
 </style>
