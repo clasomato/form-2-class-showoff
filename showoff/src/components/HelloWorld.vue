@@ -14,12 +14,14 @@
       <input type="password" v-model="userPwLogin" placeholder="Password"> <br>
       <button @click="authLogin">Login</button> <br>
       <button @click="swapToSignUp">Create an account</button>
+      <button @click="swapToGuestLogin">Guest Login</button>
     </div>
 
     <div id="content">
-      <button @click="signOut" style="position: absolute; top:0; left:0; width:20%; border:none">Signout</button>
+      <button @click="signOut" style="position: absolute; top:0; left:0; width:20%; border:none" v-if="isSignedIn === true">Signout</button>
+      <button @click="swapToSignIn" style="position: absolute; top:0; left:0; width:20%; border:none" v-if="isSignedIn === false">Signin</button>
       <h1>Welcome</h1>
-      <div class="addAnItem">
+      <div class="addAnItem" v-if="isSignedIn === true">
         <input type="text" placeholder="Name (of work)" id="userWorkName"> <br>
         <input type="text" placeholder="imageURL" id="imageURL"> <br>
         <input type="text" placeholder="Author" id="author"> <br>
@@ -31,9 +33,8 @@
         <ul id="example-1">
           <li v-for="item in items" :key="item.message">
             <div class="showItem">
-              <!-- {{ item.id }} -->
-              {{ item.userWorkName }} <br>
-              <img alt="" v-bind:src="item.userImageURL" width="20%"> <br>
+              <h3 style="margin:0; padding:0;">{{ item.userWorkName }}</h3> <br>
+              <img alt="" v-bind:src="item.userImageURL" width="90%"> <br>
               {{ item.userAuthor }} <br>
               <a v-bind:href="item.userPortfolioLink" target="_blank">View Portfolio</a>
             </div>
@@ -112,12 +113,18 @@ export default {
     swapToSignIn: function () {
       $('#signUp').hide(100)
       $('#login').show(100)
+      $('#content').hide(100)
     },
     swapToSignUp: function () {
       $('#signUp').show(100)
       $('#login').hide(100)
     },
     swapToContent: function () {
+      $('#signUp').hide()
+      $('#login').hide()
+      $('#content').show(100)
+    },
+    swapToGuestLogin: function () {
       $('#signUp').hide()
       $('#login').hide()
       $('#content').show(100)
