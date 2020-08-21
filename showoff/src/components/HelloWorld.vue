@@ -20,10 +20,25 @@
       <button @click="signOut">Signout</button>
       <h1>Welcome</h1>
       <div class="addAnItem">
-        <input type="text" placeholder="Name (of work)">
-        <input type="text" placeholder="imageURL">
-        <input type="text" placeholder="Author">
-        <input type="text" placeholder="Link To Site/Portfolio">
+        <input type="text" placeholder="Name (of work)" id="userWorkName"> <br>
+        <input type="text" placeholder="imageURL" id="imageURL"> <br>
+        <input type="text" placeholder="Author" id="author"> <br>
+        <input type="text" placeholder="Link To Site/Portfolio" id="portfolioLink"> <br>
+        <button @click="addItem">Add Item</button>
+      </div>
+
+      <div class="items">
+        <ul id="example-1">
+          <li v-for="item in items" :key="item.message">
+            <div class="pet">
+              <!-- {{ item.id }} -->
+              {{ item.userWorkName }} <br>
+              <img alt="" v-bind:src="item.userImageURL" width="100%"> <br>
+              {{ item.userAuthor }} <br>
+              <a v-bind:href="item.userPortfolioLink" target="_blank">View Portfolio</a>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -36,16 +51,16 @@ import db from '../firebase.js'
 import firebase from 'firebase'
 import toastr from 'toastr'
 require('firebase/auth')
-var firebaseConfig = {
-  apiKey: 'AIzaSyCaQXgylYy5KGT4o7GS-RaW_TAHQItns1Q',
-  authDomain: 'form2-showoff.firebaseapp.com',
-  databaseURL: 'https://form2-showoff.firebaseio.com',
-  projectId: 'form2-showoff',
-  storageBucket: 'form2-showoff.appspot.com',
-  messagingSenderId: '714780095107',
-  appId: '1:714780095107:web:aaca9357f34b288eefa1b6'
-}
-firebase.initializeApp(firebaseConfig)
+// var firebaseConfig = {
+//   apiKey: 'AIzaSyCaQXgylYy5KGT4o7GS-RaW_TAHQItns1Q',
+//   authDomain: 'form2-showoff.firebaseapp.com',
+//   databaseURL: 'https://form2-showoff.firebaseio.com',
+//   projectId: 'form2-showoff',
+//   storageBucket: 'form2-showoff.appspot.com',
+//   messagingSenderId: '714780095107',
+//   appId: '1:714780095107:web:aaca9357f34b288eefa1b6'
+// }
+// firebase.initializeApp(firebaseConfig)
 
 console.log(db)
 
@@ -63,7 +78,8 @@ export default {
       userEmailLogin: '',
       userPwLogin: '',
       isSignedIn: false,
-      errorMessage: ''
+      errorMessage: '',
+      items: false
     }
   },
   methods: {
@@ -109,10 +125,39 @@ export default {
     signOut: function () {
       localStorage.setItem('signedIn', 'false')
       location.reload()
+    },
+    addItem: function () {
+      var nameOfWork = document.getElementById('userWorkName').value
+      var imageURL = document.getElementById('imageURL').value
+      var author = document.getElementById('author').value
+      var portfolioLink = document.getElementById('portfolioLink').value
+
+      function getRandomInt (max) {
+        return Math.floor(Math.random() * Math.floor(max))
+      }
+
+      var id = getRandomInt(1000)
+      var docoId = id.toString()
+
+      // Add a new document in collection "cities"
+      db.collection('showoff').doc(docoId).set({
+        id: docoId,
+        userWorkName: nameOfWork,
+        userImageURL: imageURL,
+        userAuthor: author,
+        userPortfolioLink: portfolioLink
+      })
+        .then(function () {
+          console.log('Document successfully written!')
+        })
+        .catch(function (error) {
+          console.error('Error writing document: ', error)
+        })
     }
   },
   mounted () {
     const v = this
+    var data = []
     if (localStorage.getItem('signedIn') === 'true') {
       console.log('swap to content')
       v.isSignedIn = true
@@ -120,13 +165,29 @@ export default {
     } else {
       toastr.warning('Please Signin To Continue')
     }
+
+    db.collection('showoff').onSnapshot(function (pets) {
+      // pets is the data response or collection - we use a forEach
+      // loop to loop through and then list
+      pets.forEach(function (doc) {
+        // eachDoc is a js object representing each document in the collection
+        var eachDoc = doc.data()
+        // logging eachDoc to the console
+        // console.log(eachDoc)
+        data.push(eachDoc)
+        v.items = data
+        console.log(v.items)
+      })
+    })
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-// @import "../toastr/build/toastr.css";
+* {
+  box-sizing: border-box;
+}
 h3 {
   margin: 40px 0 0;
 }
@@ -141,7 +202,6 @@ li {
 a {
   color: #42b983;
 }
-
 #login, #content {
   display: none;
 }
