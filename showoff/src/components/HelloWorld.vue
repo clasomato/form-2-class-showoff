@@ -41,6 +41,14 @@
           </li>
         </ul>
       </div>
+
+      <div class="editItems">
+        <input type="text" placeholder="Name (of work)" id="userWorkNameReplace"> <br>
+        <input type="text" placeholder="imageURL" id="imageURLReplace"> <br>
+        <input type="text" placeholder="Author" id="authorReplace"> <br>
+        <input type="text" placeholder="Link To Site/Portfolio" id="portfolioLinkReplace"> <br>
+        <button @click="editItem">Edit Item</button>
+      </div>
     </div>
   </div>
 </template>
@@ -161,6 +169,9 @@ export default {
         .catch(function (error) {
           console.error('Error writing document: ', error)
         })
+    },
+    editItem: function () {
+
     }
   },
   mounted () {
@@ -239,5 +250,15 @@ button {
   padding: 1% 2%;
   margin: 0.25%;
   width: 40%;
+}
+
+.editItems {
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba($color: #000000, $alpha: 0.8);
+  display: none;
 }
 </style>
