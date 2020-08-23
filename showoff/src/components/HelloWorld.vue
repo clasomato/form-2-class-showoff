@@ -39,7 +39,8 @@
               <a v-bind:href="item.userPortfolioLink" target="_blank">View Portfolio</a> <br>
               <!-- <button >Edit Item</button> -->
               <img src="../assets/edit-solid.svg" alt="" width="5%" @click="showEditItem(item.id, item.userWorkName, item.userImageURL, item.userAuthor, item.userPortfolioLink)" v-if="isSignedIn === true" style="color:white">
-              <img src="../assets/heart-regular.svg" alt="" width="4%" @click="likeItem(item.id, item.likes++)"> <a>{{ item.likes }}</a>
+              <img src="../assets/heart-regular.svg" alt="" width="4%" @click="likeItem(item.id, item.likes++)"> <a>{{ item.likes }}</a> <br>
+              <button type="button" name="button" @click='deleteItem(item.id)'>Delete</button>
             </div>
           </li>
         </ul>
@@ -259,10 +260,19 @@ export default {
       db.collection('showoff').doc(id).update({ userAuthor: replaceAuthor })
       db.collection('showoff').doc(id).update({ userPortfolioLink: replacePortfolio })
     }, // Edit item ENDS
+
     // Like item
     likeItem: function (id, likes) {
       db.collection('showoff').doc(id).update({ likes: likes })
-    } // Like item ENDS
+    }, // Like item ENDS
+    deleteItem: function (id) {
+      console.log(id)
+      db.collection('showoff').doc(id).delete().then(function () {
+        console.log('Document successfully deleted!')
+      }).catch(function (error) {
+        console.error('Error removing document: ', error)
+      })
+    }
   },
   // When application is loaded it will grab the items from firebase
   mounted () {
