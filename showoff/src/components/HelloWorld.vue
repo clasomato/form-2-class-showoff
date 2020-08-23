@@ -57,18 +57,20 @@
 </template>
 
 <script>
-// Jquery Setup
+// Imports
 import Vue from 'vue'
 import db from '../firebase.js'
-// var db = firebase
 import firebase from 'firebase'
 import toastr from 'toastr'
 require('firebase/auth')
 
+// Console log to satisfy linter
 console.log(db + Vue)
 
+// setting jquery to $ var
 var $ = require('jquery')
 
+// Setting up the vue instance
 export default {
   name: 'HelloWorld',
   props: {
@@ -87,6 +89,7 @@ export default {
     }
   },
   methods: {
+    // Create User
     auth: function () {
       const v = this
       firebase.auth().createUserWithEmailAndPassword(v.userEmail, v.userPw).then(function () {
@@ -96,7 +99,8 @@ export default {
         console.error(error.message)
         v.errorMessage = error.message
       })
-    },
+    }, // Create user ENDS
+    // Signin
     authLogin: function () {
       const v = this
       firebase.auth().signInWithEmailAndPassword(v.userEmailLogin, v.userPwLogin).then(function () {
@@ -112,7 +116,8 @@ export default {
         console.log(errorCode)
         // ...
       })
-    },
+    }, // Signin ENDS
+    // Transitions & hide/shows
     swapToSignIn: function () {
       $('#signUp').hide(100)
       $('#login').show(100)
@@ -131,25 +136,32 @@ export default {
       $('#signUp').hide()
       $('#login').hide()
       $('#content').show(100)
-    },
+    }, // Transitions ENDS
+    // Signout method
     signOut: function () {
       localStorage.setItem('signedIn', 'false')
       location.reload()
-    },
+    }, // Signout ENDS
+    // Add item
     addItem: function () {
+      // Grabbing data from the DOM
       var nameOfWork = document.getElementById('userWorkName').value
       var imageURL = document.getElementById('imageURL').value
       var author = document.getElementById('author').value
       var portfolioLink = document.getElementById('portfolioLink').value
 
+      // Function to create a random id for the document
       function getRandomInt (max) {
         return Math.floor(Math.random() * Math.floor(max))
       }
 
+      // Setting the variable with the function return
       var id = getRandomInt(1000)
+
+      // Converting into a string because document names must be a string
       var docoId = id.toString()
 
-      // Add a new document in collection "cities"
+      // Add a new document in collection "showoff"
       db.collection('showoff').doc(docoId).set({
         id: docoId,
         likes: 0,
@@ -165,9 +177,12 @@ export default {
         .catch(function (error) {
           console.error('Error writing document: ', error)
         })
-    },
+    }, // Add item ENDS
+    // Show the edit item div
     showEditItem: function (id, workName, imgURL, author, portfolio) {
       const v = this
+
+      // Sending the item specific data to be stored in the vue instance
       v.editObj = {
         id: id,
         workName: workName,
@@ -175,17 +190,23 @@ export default {
         author: author,
         portfolio: portfolio
       }
+
+      // Showing the edit item modal
       $('#editItem').show()
-    },
+    }, // show edit item ENDS
+    // Edit item
     editItem: function () {
+      // Vue variable
       const v = this
 
+      // Grabbing the item specific data from Vue
       var id = v.editObj.id
       var name = v.editObj.workName
       var imgURL = v.editObj.imgURL
       var author = v.editObj.author
       var portfolio = v.editObj.portfolio
 
+      // Making blank variables to be used later
       var replaceName
       var replaceIMG
       var replaceAuthor
@@ -193,11 +214,13 @@ export default {
 
       console.log(id)
 
+      // Grabbing data from the DOM
       var nameOfWorkReplace = document.getElementById('userWorkNameReplace').value
       var imageURLReplace = document.getElementById('imageURLReplace').value
       var authorReplace = document.getElementById('authorReplace').value
       var portfolioLinkReplace = document.getElementById('portfolioLinkReplace').value
 
+      // Check to see if we need to populate with new or old data
       if (nameOfWorkReplace !== '') {
         replaceName = nameOfWorkReplace
         console.log('named change')
@@ -206,47 +229,54 @@ export default {
         console.log('name not chnaged')
       }
 
+      // Check to see if we need to populate with new or old data
       if (imageURLReplace !== '') {
         replaceIMG = imageURLReplace
       } else {
         replaceIMG = imgURL
       }
 
+      // Check to see if we need to populate with new or old data
       if (authorReplace !== '') {
         replaceAuthor = authorReplace
       } else {
         replaceAuthor = author
       }
 
+      // Check to see if we need to populate with new or old data
       if (portfolioLinkReplace !== '') {
         replacePortfolio = portfolioLinkReplace
       } else {
         replacePortfolio = portfolio
       }
 
+      // This is making the linter happy!
       console.log(v + replaceName + replaceIMG + replaceAuthor + replacePortfolio)
 
+      // Setting each individual property
       db.collection('showoff').doc(id).update({ userWorkName: replaceName })
       db.collection('showoff').doc(id).update({ userImageURL: replaceIMG })
       db.collection('showoff').doc(id).update({ userAuthor: replaceAuthor })
       db.collection('showoff').doc(id).update({ userPortfolioLink: replacePortfolio })
-
-      // location.reload()
-    },
+    }, // Edit item ENDS
+    // Like item
     likeItem: function (id, likes) {
-      console.log(likes)
-
       db.collection('showoff').doc(id).update({ likes: likes })
-    }
+    } // Like item ENDS
   },
+  // When application is loaded it will grab the items from firebase
   mounted () {
     const v = this
     var data = []
+
+    // Checking local storage to see if the user is signed in
     if (localStorage.getItem('signedIn') === 'true') {
+      // If user is signed in then it will show the content
       console.log('swap to content')
       v.isSignedIn = true
       v.swapToContent()
     } else {
+      // Add a warning that the user should signin
       toastr.warning('Please Signin To Continue')
     }
 
@@ -256,8 +286,6 @@ export default {
       pets.forEach(function (doc) {
         // eachDoc is a js object representing each document in the collection
         var eachDoc = doc.data()
-        // logging eachDoc to the console
-        // console.log(eachDoc)
         data.push(eachDoc)
         v.items = data
         console.log(v.items)
