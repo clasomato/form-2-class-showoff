@@ -6,6 +6,7 @@
       <input type="password" v-model="userPw" placeholder="Password"> <br>
       <button @click="auth">Sign Up</button> <br>
       <button @click="swapToSignIn">Already Have an account?</button>
+      <button @click="swapToGuestLogin">Guest Login</button>
     </div>
 
     <div id="login">
@@ -14,7 +15,6 @@
       <input type="password" v-model="userPwLogin" placeholder="Password"> <br>
       <button @click="authLogin">Login</button> <br>
       <button @click="swapToSignUp">Create an account</button>
-      <button @click="swapToGuestLogin">Guest Login</button>
     </div>
 
     <div id="content">
@@ -23,9 +23,9 @@
       <h1>Welcome</h1>
       <div class="addAnItem" v-if="isSignedIn === true">
         <input type="text" placeholder="Name (of work)" id="userWorkName"> <br>
-        <input type="text" placeholder="imageURL" id="imageURL"> <br>
+        <input type="url" placeholder="imageURL" id="imageURL"> <br>
         <input type="text" placeholder="Author" id="author"> <br>
-        <input type="text" placeholder="Link To Site/Portfolio" id="portfolioLink"> <br>
+        <input type="url" placeholder="Link To Site/Portfolio" id="portfolioLink"> <br>
         <button @click="addItem">Add Item</button>
       </div>
 
@@ -36,17 +36,20 @@
               <h3 style="margin:0; padding:0;">{{ item.userWorkName }}</h3> <br>
               <img alt="" v-bind:src="item.userImageURL" width="90%"> <br>
               {{ item.userAuthor }} <br>
-              <a v-bind:href="item.userPortfolioLink" target="_blank">View Portfolio</a>
+              <a v-bind:href="item.userPortfolioLink" target="_blank">View Portfolio</a> <br>
+              <!-- <button >Edit Item</button> -->
+              <img src="../assets/edit-solid.svg" alt="" width="5%" @click="showEditItem(item.id, item.userWorkName, item.userImageURL, item.userAuthor, item.userPortfolioLink)" v-if="isSignedIn === true" style="color:white">
+              <img src="../assets/heart-regular.svg" alt="" width="4%" @click="likeItem(item.id, item.likes++)"> <a>{{ item.likes }}</a>
             </div>
           </li>
         </ul>
       </div>
 
-      <div class="editItems">
+      <div class="editItems" id="editItem">
         <input type="text" placeholder="Name (of work)" id="userWorkNameReplace"> <br>
-        <input type="text" placeholder="imageURL" id="imageURLReplace"> <br>
+        <input type="url" placeholder="imageURL" id="imageURLReplace"> <br>
         <input type="text" placeholder="Author" id="authorReplace"> <br>
-        <input type="text" placeholder="Link To Site/Portfolio" id="portfolioLinkReplace"> <br>
+        <input type="url" placeholder="Link To Site/Portfolio" id="portfolioLinkReplace"> <br>
         <button @click="editItem">Edit Item</button>
       </div>
     </div>
@@ -55,23 +58,14 @@
 
 <script>
 // Jquery Setup
+import Vue from 'vue'
 import db from '../firebase.js'
 // var db = firebase
 import firebase from 'firebase'
 import toastr from 'toastr'
 require('firebase/auth')
-// var firebaseConfig = {
-//   apiKey: 'AIzaSyCaQXgylYy5KGT4o7GS-RaW_TAHQItns1Q',
-//   authDomain: 'form2-showoff.firebaseapp.com',
-//   databaseURL: 'https://form2-showoff.firebaseio.com',
-//   projectId: 'form2-showoff',
-//   storageBucket: 'form2-showoff.appspot.com',
-//   messagingSenderId: '714780095107',
-//   appId: '1:714780095107:web:aaca9357f34b288eefa1b6'
-// }
-// firebase.initializeApp(firebaseConfig)
 
-console.log(db)
+console.log(db + Vue)
 
 var $ = require('jquery')
 
@@ -88,7 +82,8 @@ export default {
       userPwLogin: '',
       isSignedIn: false,
       errorMessage: '',
-      items: false
+      items: false,
+      editObj: false
     }
   },
   methods: {
@@ -157,6 +152,7 @@ export default {
       // Add a new document in collection "cities"
       db.collection('showoff').doc(docoId).set({
         id: docoId,
+        likes: 0,
         userWorkName: nameOfWork,
         userImageURL: imageURL,
         userAuthor: author,
@@ -170,8 +166,77 @@ export default {
           console.error('Error writing document: ', error)
         })
     },
+    showEditItem: function (id, workName, imgURL, author, portfolio) {
+      const v = this
+      v.editObj = {
+        id: id,
+        workName: workName,
+        imgURL: imgURL,
+        author: author,
+        portfolio: portfolio
+      }
+      $('#editItem').show()
+    },
     editItem: function () {
+      const v = this
 
+      var id = v.editObj.id
+      var name = v.editObj.workName
+      var imgURL = v.editObj.imgURL
+      var author = v.editObj.author
+      var portfolio = v.editObj.portfolio
+
+      var replaceName
+      var replaceIMG
+      var replaceAuthor
+      var replacePortfolio
+
+      console.log(id)
+
+      var nameOfWorkReplace = document.getElementById('userWorkNameReplace').value
+      var imageURLReplace = document.getElementById('imageURLReplace').value
+      var authorReplace = document.getElementById('authorReplace').value
+      var portfolioLinkReplace = document.getElementById('portfolioLinkReplace').value
+
+      if (nameOfWorkReplace !== '') {
+        replaceName = nameOfWorkReplace
+        console.log('named change')
+      } else {
+        replaceName = name
+        console.log('name not chnaged')
+      }
+
+      if (imageURLReplace !== '') {
+        replaceIMG = imageURLReplace
+      } else {
+        replaceIMG = imgURL
+      }
+
+      if (authorReplace !== '') {
+        replaceAuthor = authorReplace
+      } else {
+        replaceAuthor = author
+      }
+
+      if (portfolioLinkReplace !== '') {
+        replacePortfolio = portfolioLinkReplace
+      } else {
+        replacePortfolio = portfolio
+      }
+
+      console.log(v + replaceName + replaceIMG + replaceAuthor + replacePortfolio)
+
+      db.collection('showoff').doc(id).update({ userWorkName: replaceName })
+      db.collection('showoff').doc(id).update({ userImageURL: replaceIMG })
+      db.collection('showoff').doc(id).update({ userAuthor: replaceAuthor })
+      db.collection('showoff').doc(id).update({ userPortfolioLink: replacePortfolio })
+
+      // location.reload()
+    },
+    likeItem: function (id, likes) {
+      console.log(likes)
+
+      db.collection('showoff').doc(id).update({ likes: likes })
     }
   },
   mounted () {
