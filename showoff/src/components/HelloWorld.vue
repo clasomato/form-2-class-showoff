@@ -119,7 +119,7 @@ export default {
         // Handle Errors here.
         var errorCode = error.code
         console.log(errorCode)
-        toastr.error('Log in Unsuccessful')
+        toastr.error('Login Unsuccessful')
         // ...
       })
     }, // Signin ENDS
@@ -129,7 +129,7 @@ export default {
       $('#signUp').hide(100)
       $('#login').show(100)
       $('#content').hide(100)
-      toastr.info('Login or Continue as a Guest')
+      toastr.info('Please Login to Continue')
       // setInterval(function () { toastr.clear() }, 3000)
     },
     swapToSignUp: function () {
@@ -141,13 +141,13 @@ export default {
       $('#signUp').hide()
       $('#login').hide()
       $('#content').show(100)
-      toastr.success('User Log in Successful')
+      toastr.success('User Login Successful')
     },
     swapToGuestLogin: function () {
       $('#signUp').hide()
       $('#login').hide()
       $('#content').show(100)
-      toastr.success('Guest Log in Successful')
+      toastr.success('Guest Login Successful')
     }, // Transitions ENDS
     // Signout method
     signOut: function () {
@@ -296,9 +296,9 @@ export default {
       console.log('swap to content')
       v.isSignedIn = true
       v.swapToContent()
-      toastr.success('User Log in Successful')
+      toastr.success('User Login Successful')
     } else {
-      toastr.info('Please Sign in to Continue')
+      toastr.info('Please Sign up to Continue')
     }
 
     db.collection('showoff').onSnapshot(function (pets) {
