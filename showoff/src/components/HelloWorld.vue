@@ -89,6 +89,7 @@ export default {
       editObj: false
     }
   },
+  // Issue with error message remaining on "Have an Account page"
   methods: {
     // Create User
     auth: function () {
@@ -96,9 +97,12 @@ export default {
       firebase.auth().createUserWithEmailAndPassword(v.userEmail, v.userPw).then(function () {
         v.swapToSignIn()
       }).catch(function (error) {
+        // Handle Errors here.
         console.error(error.code)
         console.error(error.message)
-        v.errorMessage = error.message
+        // v.errorMessage = error.message
+        toastr.error('Sign up Unsuccessful')
+        // ...
       })
     }, // Create user ENDS
     // Signin
@@ -115,28 +119,35 @@ export default {
         // Handle Errors here.
         var errorCode = error.code
         console.log(errorCode)
+        toastr.error('Log in Unsuccessful')
         // ...
       })
     }, // Signin ENDS
     // Transitions & hide/shows
+    // Issue with setInterval specified delay not working
     swapToSignIn: function () {
       $('#signUp').hide(100)
       $('#login').show(100)
       $('#content').hide(100)
+      toastr.info('Login or Continue as a Guest')
+      // setInterval(function () { toastr.clear() }, 3000)
     },
     swapToSignUp: function () {
       $('#signUp').show(100)
       $('#login').hide(100)
+      toastr.info('Please Sign up to Continue')
     },
     swapToContent: function () {
       $('#signUp').hide()
       $('#login').hide()
       $('#content').show(100)
+      toastr.success('User Log in Successful')
     },
     swapToGuestLogin: function () {
       $('#signUp').hide()
       $('#login').hide()
       $('#content').show(100)
+      toastr.success('Guest Log in Successful')
     }, // Transitions ENDS
     // Signout method
     signOut: function () {
@@ -285,9 +296,9 @@ export default {
       console.log('swap to content')
       v.isSignedIn = true
       v.swapToContent()
+      toastr.success('User Log in Successful')
     } else {
-      // Add a warning that the user should signin
-      toastr.warning('Please Signin To Continue')
+      toastr.info('Please Sign in to Continue')
     }
 
     db.collection('showoff').onSnapshot(function (pets) {
