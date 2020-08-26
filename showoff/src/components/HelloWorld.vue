@@ -49,7 +49,7 @@
 
       <div class="editItems" id="editItem">
         <input type="text" placeholder="Name (of work)" id="userWorkNameReplace"> <br>
-        <input type="url" placeholder="imageURL" id="imageURLReplace" @change="previewFiles"> <br>
+        <input type="url" placeholder="imageURL" id="imageURLReplace"> <br>
         <input type="text" placeholder="Author" id="authorReplace"> <br>
         <input type="url" placeholder="Link To Site/Portfolio" id="portfolioLinkReplace"> <br>
         <button @click="editItem">Edit Item</button>
