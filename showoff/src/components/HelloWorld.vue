@@ -23,10 +23,11 @@
       <h1>Welcome</h1>
       <div class="addAnItem" v-if="isSignedIn === true">
         <input type="text" placeholder="Name (of work)" id="userWorkName"> <br>
-        <input type="url" placeholder="imageURL" id="imageURL"> <br>
+        <input type="file" placeholder="imageURL" @change="previewFiles" id="imageURL"> <br>
         <input type="text" placeholder="Author" id="author"> <br>
         <input type="url" placeholder="Link To Site/Portfolio" id="portfolioLink"> <br>
-        <button @click="addItem">Add Item</button>
+        <button @click="addItem">Add Item</button> <br>
+
       </div>
 
       <div class="items">
@@ -39,8 +40,8 @@
               <a v-bind:href="item.userPortfolioLink" target="_blank">View Portfolio</a> <br>
               <!-- <button >Edit Item</button> -->
               <img src="../assets/edit-solid.svg" alt="" width="5%" @click="showEditItem(item.id, item.userWorkName, item.userImageURL, item.userAuthor, item.userPortfolioLink)" v-if="isSignedIn === true" style="color:white">
-              <img src="../assets/heart-regular.svg" alt="" width="4%" @click="likeItem(item.id, item.likes++)"> <a>{{ item.likes }}</a> <br>
-              <button type="button" name="button" @click='deleteItem(item.id)'>Delete</button>
+              <img src="../assets/heart-regular.svg" alt="" width="4%" @click="likeItem(item.id, item.likes)" id="heartEmpty"> <img src="../assets/heart-solid.svg" alt="" width="4%" @click="likeItem(item.id, item.likes)" id="heartSolid"> <a>{{ item.likes }}</a> <br>
+              <button type="button" name="button" @click='deleteItem(item.id)' v-if="isSignedIn === true">Delete</button>
             </div>
           </li>
         </ul>
@@ -48,7 +49,7 @@
 
       <div class="editItems" id="editItem">
         <input type="text" placeholder="Name (of work)" id="userWorkNameReplace"> <br>
-        <input type="url" placeholder="imageURL" id="imageURLReplace"> <br>
+        <input type="url" placeholder="imageURL" id="imageURLReplace" @change="previewFiles"> <br>
         <input type="text" placeholder="Author" id="authorReplace"> <br>
         <input type="url" placeholder="Link To Site/Portfolio" id="portfolioLinkReplace"> <br>
         <button @click="editItem">Edit Item</button>
@@ -62,11 +63,17 @@
 import Vue from 'vue'
 import db from '../firebase.js'
 import firebase from 'firebase'
+// import base64 from '../plugins/base64plugin.js'
 import toastr from 'toastr'
+import fs from 'fs'
+import img from '../assets/logo.png'
 require('firebase/auth')
+// var storage = firebase.storage()
+
+console.log(img)
 
 // Console log to satisfy linter
-console.log(db + Vue)
+console.log(db + Vue + fs)
 
 // setting jquery to $ var
 var $ = require('jquery')
@@ -86,7 +93,8 @@ export default {
       isSignedIn: false,
       errorMessage: '',
       items: false,
-      editObj: false
+      editObj: false,
+      imageUpload: false
     }
   },
   methods: {
@@ -144,10 +152,11 @@ export default {
       location.reload()
     }, // Signout ENDS
     // Add item
-    addItem: function () {
+    addItem: function (event) {
+      var v = this
       // Grabbing data from the DOM
       var nameOfWork = document.getElementById('userWorkName').value
-      var imageURL = document.getElementById('imageURL').value
+      var imageURL = v.imageUpload
       var author = document.getElementById('author').value
       var portfolioLink = document.getElementById('portfolioLink').value
 
@@ -251,27 +260,69 @@ export default {
         replacePortfolio = portfolio
       }
 
-      // This is making the linter happy!
-      console.log(v + replaceName + replaceIMG + replaceAuthor + replacePortfolio)
-
       // Setting each individual property
       db.collection('showoff').doc(id).update({ userWorkName: replaceName })
       db.collection('showoff').doc(id).update({ userImageURL: replaceIMG })
       db.collection('showoff').doc(id).update({ userAuthor: replaceAuthor })
       db.collection('showoff').doc(id).update({ userPortfolioLink: replacePortfolio })
+
+      // location.reload()
     }, // Edit item ENDS
 
     // Like item
     likeItem: function (id, likes) {
-      db.collection('showoff').doc(id).update({ likes: likes })
+      const v = this
+      var data = []
+
+      if (localStorage.getItem(id) === 'true') {
+        toastr.warning('Sorry You Have Already Liked This')
+      } else {
+        likes = likes + 1
+        db.collection('showoff').doc(id).update({ likes: likes })
+        localStorage.setItem(id, 'true')
+
+        $('#heartSolid').show()
+        $('#heartEmpty').hide()
+
+        db.collection('showoff').onSnapshot(function (pets) {
+          // pets is the data response or collection - we use a forEach
+          // loop to loop through and then list
+          pets.forEach(function (doc) {
+            // eachDoc is a js object representing each document in the collection
+            var eachDoc = doc.data()
+            data.push(eachDoc)
+            v.items = data
+            console.log(v.items)
+          })
+        })
+      }
     }, // Like item ENDS
     deleteItem: function (id) {
       console.log(id)
       db.collection('showoff').doc(id).delete().then(function () {
         console.log('Document successfully deleted!')
+        location.reload()
       }).catch(function (error) {
         console.error('Error removing document: ', error)
       })
+    },
+    previewFiles (event) {
+      var v = this
+      console.log(event.target.files[0])
+      const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = error => reject(error)
+      })
+
+      async function Main () {
+        console.log(await toBase64(event.target.files[0]))
+        v.imageUpload = await toBase64(event.target.files[0])
+        console.log(v.imageUpload)
+      }
+
+      Main()
     }
   },
   // When application is loaded it will grab the items from firebase
@@ -362,6 +413,10 @@ button {
   top: 0;
   left: 0;
   background-color: rgba($color: #000000, $alpha: 0.8);
+  display: none;
+}
+
+#heartSolid {
   display: none;
 }
 </style>
