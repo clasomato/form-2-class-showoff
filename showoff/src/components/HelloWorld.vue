@@ -4,8 +4,8 @@
       <p>{{ errorMessage }}</p>
       <div class="container-fluid d-flex justify-content-center">
         <div class="">
-          <input class="form-control" type="email" v-model="userEmail" placeholder="Email"> <br>
-          <input class="form-control" type="password" v-model="userPw" placeholder="Password"> <br>
+          <input class="form-control" type="email" v-model="userEmail" placeholder="Email" v-on:keyup.enter="auth"> <br>
+          <input class="form-control" type="password" v-model="userPw" placeholder="Password" v-on:keyup.enter="auth"> <br>
         </div>
       </div>
         <div class=" d-flex justify-content-center">
@@ -19,8 +19,8 @@
       <p>{{ errorMessage }}</p>
       <div class="container-fluid d-flex justify-content-center">
         <div class="">
-          <input class="form-control" type="email" v-model="userEmailLogin" placeholder="Email"> <br>
-          <input class="form-control" type="password" v-model="userPwLogin" placeholder="Password"> <br>
+          <input class="form-control" type="email" v-model="userEmailLogin" placeholder="Email" v-on:keyup.enter="authLogin"> <br>
+          <input class="form-control" type="password" v-model="userPwLogin" placeholder="Password" v-on:keyup.enter="authLogin"> <br>
           <button class="btn btn-primary" @click="authLogin">Login</button> <br>
           <button class="btn btn-secondary" @click="swapToSignUp">Create an account</button>
         </div>
@@ -49,14 +49,13 @@
               <h5 style="margin:0; padding-top: 10px;">{{ item.userWorkName }}</h5>
               {{ item.userAuthor }} <br>
               <a v-bind:href="item.userPortfolioLink" target="_blank">View Portfolio</a> <br>
-              <!-- <button >Edit Item</button> -->
               <div class="d-flex justify-content-between">
                 <div class="">
                   <span @click="likeItem(item.id, item.likes++)"><i class="fas fa-heart fa-lg" style="color: red; margin-top: 13px; margin-left: 20px;"></i></span><a style="color: white"> {{ item.likes }}</a>
                 </div>
                 <div style="padding-right: 10px;" class="">
                   <button class="btn btn-secondary" type="button" name="button" @click="showEditItem(item.id, item.userWorkName, item.userImageURL, item.userAuthor, item.userPortfolioLink)" v-if="isSignedIn === true">Edit</button>
-                  <button class="btn btn-danger" type="button" name="button" @click='deleteItem(item.id)'>Delete</button>
+                  <button class="btn btn-danger" type="button" name="button" @click='deleteItem(item.id)' v-if="isSignedIn === true">Delete</button>
                 </div>
               </div>
             </div>
@@ -65,12 +64,13 @@
       </div>
 
       <div class="editItems form-control" id="editItem">
+        <a @click="closeEditItem" style="position:absolute; top:0; right:0; cursor:pointer; color:white; font-size:1.5em; padding: 2%;">Close</a>
         <div class="container-fluid d-flex justify-content-center">
           <div class="">
-            <input class="form-control" type="text" placeholder="Name (of work)" id="userWorkNameReplace"> <br>
-            <input class="form-control" type="url" placeholder="imageURL" id="imageURLReplace"> <br>
-            <input class="form-control" type="text" placeholder="Author" id="authorReplace"> <br>
-            <input class="form-control" type="url" placeholder="Link To Site/Portfolio" id="portfolioLinkReplace"> <br>
+            <input class="form-control" type="text" placeholder="Name (of work)" id="userWorkNameReplace" v-on:keyup.enter="editItem"> <br>
+            <input class="form-control" type="url" placeholder="imageURL" id="imageURLReplace" v-on:keyup.enter="editItem"> <br>
+            <input class="form-control" type="text" placeholder="Author" id="authorReplace" v-on:keyup.enter="editItem"> <br>
+            <input class="form-control" type="url" placeholder="Link To Site/Portfolio" id="portfolioLinkReplace" v-on:keyup.enter="editItem"> <br>
             <button class="btn btn-primary" @click="editItem">Edit Item</button>
           </div>
         </div>
@@ -91,9 +91,9 @@ import fontawesome from 'fontawesome'
 require('firebase/auth')
 
 // Console log to satisfy linter
-console.log(db + Vue)
-console.log(bootstrap)
-console.log(fontawesome)
+if (db === Vue !== fontawesome && bootstrap === 1) {
+  console.log('epic')
+}
 // setting jquery to $ var
 var $ = require('jquery')
 
@@ -221,7 +221,7 @@ export default {
     // Show the edit item div
     showEditItem: function (id, workName, imgURL, author, portfolio) {
       const v = this
-
+      window.scrollTo(0, 0)
       // Sending the item specific data to be stored in the vue instance
       v.editObj = {
         id: id,
@@ -234,6 +234,9 @@ export default {
       // Showing the edit item modal
       $('#editItem').show()
     }, // show edit item ENDS
+    closeEditItem: function () {
+      $('#editItem').hide()
+    },
     // Edit item
     editItem: function () {
       // Vue variable
@@ -252,7 +255,7 @@ export default {
       var replaceAuthor
       var replacePortfolio
 
-      console.log(id)
+      // console.log(id)
 
       // Grabbing data from the DOM
       var nameOfWorkReplace = document.getElementById('userWorkNameReplace').value
@@ -291,7 +294,7 @@ export default {
       }
 
       // This is making the linter happy!
-      console.log(v + replaceName + replaceIMG + replaceAuthor + replacePortfolio)
+      // console.log(v + replaceName + replaceIMG + replaceAuthor + replacePortfolio)
 
       // Setting each individual property
       db.collection('showoff').doc(id).update({ userWorkName: replaceName })
@@ -307,7 +310,7 @@ export default {
 
     // Delete item
     deleteItem: function (id) {
-      console.log(id)
+      // console.log(id)
       db.collection('showoff').doc(id).delete().then(function () {
         console.log('Document successfully deleted!')
         // Refresh page after deleting item
@@ -327,9 +330,9 @@ export default {
       })
 
       async function Main () {
-        console.log(await toBase64(event.target.files[0]))
+        // console.log(await toBase64(event.target.files[0]))
         v.imageUpload = await toBase64(event.target.files[0])
-        console.log(v.imageUpload)
+        // console.log(v.imageUpload)
       }
 
       Main()
@@ -344,7 +347,7 @@ export default {
     // Checking local storage to see if the user is signed in
     if (localStorage.getItem('signedIn') === 'true') {
       // If user is signed in then it will show the content
-      console.log('swap to content')
+      // console.log('swap to content')
       v.isSignedIn = true
       v.swapToContent()
       toastr.success('User Login Successful')
@@ -360,7 +363,7 @@ export default {
         var eachDoc = doc.data()
         data.push(eachDoc)
         v.items = data
-        console.log(v.items)
+        // console.log(v.items)
       })
     })
   }
@@ -369,8 +372,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+html {
+  scroll-behavior: smooth;
+}
 * {
   box-sizing: border-box;
+  scroll-behavior: smooth;
 }
 h3 {
   margin: 40px 0 0;
