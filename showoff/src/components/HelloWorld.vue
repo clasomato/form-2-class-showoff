@@ -1,59 +1,82 @@
-<template>
+'<template>
   <div class="hello">
-    <div id="signUp">
+    <div id="signUp" class="form-group">
       <p>{{ errorMessage }}</p>
-      <input type="email" v-model="userEmail" placeholder="Email"> <br>
-      <input type="password" v-model="userPw" placeholder="Password"> <br>
-      <button @click="auth">Sign Up</button> <br>
-      <button @click="swapToSignIn">Already Have an account?</button>
-      <button @click="swapToGuestLogin">Guest Login</button>
+      <div class="container-fluid d-flex justify-content-center">
+        <div class="">
+          <input class="form-control" type="email" v-model="userEmail" placeholder="Email"> <br>
+          <input class="form-control" type="password" v-model="userPw" placeholder="Password"> <br>
+        </div>
+      </div>
+        <div class=" d-flex justify-content-center">
+          <button class="btn btn-primary" @click="auth">Sign Up</button>
+          <button class="btn btn-secondary" @click="swapToGuestLogin">Guest Login</button> <br>
+          <button class="btn btn-dark" @click="swapToSignIn">Already Have an account?</button>
+        </div>
     </div>
 
-    <div id="login">
+    <div id="login" class="form-group">
       <p>{{ errorMessage }}</p>
-      <input type="email" v-model="userEmailLogin" placeholder="Email"> <br>
-      <input type="password" v-model="userPwLogin" placeholder="Password"> <br>
-      <button @click="authLogin">Login</button> <br>
-      <button @click="swapToSignUp">Create an account</button>
+      <div class="container-fluid d-flex justify-content-center">
+        <div class="">
+          <input class="form-control" type="email" v-model="userEmailLogin" placeholder="Email"> <br>
+          <input class="form-control" type="password" v-model="userPwLogin" placeholder="Password"> <br>
+          <button class="btn btn-primary" @click="authLogin">Login</button> <br>
+          <button class="btn btn-secondary" @click="swapToSignUp">Create an account</button>
+        </div>
+      </div>
     </div>
 
     <div id="content">
-      <button @click="signOut" style="position: absolute; top:0; left:0; width:20%; border:none" v-if="isSignedIn === true">Signout</button>
-      <button @click="swapToSignIn" style="position: absolute; top:0; left:0; width:20%; border:none" v-if="isSignedIn === false">Signin</button>
+      <button class="btn btn-primary" @click="signOut" style="position: absolute; top:0; left:0; width:20%; border:none" v-if="isSignedIn === true">Signout</button>
+      <button class="btn btn-primary"  @click="swapToSignIn" style="position: absolute; top:0; left:0; width:20%; border:none" v-if="isSignedIn === false">Signin</button>
       <h1>Welcome</h1>
-      <div class="addAnItem" v-if="isSignedIn === true">
-        <input type="text" placeholder="Name (of work)" id="userWorkName"> <br>
-        <input type="url" placeholder="imageURL" id="imageURL"> <br>
-        <input type="text" placeholder="Author" id="author"> <br>
-        <input type="url" placeholder="Link To Site/Portfolio" id="portfolioLink"> <br>
-        <button @click="addItem">Add Item</button>
+      <div class="addAnItem form-group container-fluid d-flex justify-content-center" v-if="isSignedIn === true">
+        <div class="">
+          <input class="form-control" type="text" placeholder="Name (of work)" id="userWorkName"> <br>
+          <input type="file" placeholder="imageURL" @change="previewFiles" id="imageURL"> <br>
+          <input class="form-control" type="text" placeholder="Author" id="author"> <br>
+          <input class="form-control" type="url" placeholder="Link To Site/Portfolio" id="portfolioLink"> <br>
+          <button class="btn btn-primary" @click="addItem">Add Item</button>
+        </div>
       </div>
 
       <div class="items">
-        <ul id="example-1">
+        <ul class="" id="example-1">
           <li v-for="item in items" :key="item.message">
             <div class="showItem">
-              <h3 style="margin:0; padding:0;">{{ item.userWorkName }}</h3> <br>
-              <img alt="" v-bind:src="item.userImageURL" width="90%"> <br>
+              <img class="thumbnail-image" lass alt="" v-bind:src="item.userImageURL" width="100%"> <br>
+              <h5 style="margin:0; padding-top: 10px;">{{ item.userWorkName }}</h5>
               {{ item.userAuthor }} <br>
               <a v-bind:href="item.userPortfolioLink" target="_blank">View Portfolio</a> <br>
               <!-- <button >Edit Item</button> -->
-              <img src="../assets/edit-solid.svg" alt="" width="5%" @click="showEditItem(item.id, item.userWorkName, item.userImageURL, item.userAuthor, item.userPortfolioLink)" v-if="isSignedIn === true" style="color:white">
-              <img src="../assets/heart-regular.svg" alt="" width="4%" @click="likeItem(item.id, item.likes++)"> <a>{{ item.likes }}</a> <br>
-              <button type="button" name="button" @click='deleteItem(item.id)'>Delete</button>
+              <div class="d-flex justify-content-between">
+                <div class="">
+                  <span @click="likeItem(item.id, item.likes++)"><i class="fas fa-heart fa-lg" style="color: red; margin-top: 13px; margin-left: 20px;"></i></span><a style="color: white"> {{ item.likes }}</a>
+                </div>
+                <div style="padding-right: 10px;" class="">
+                  <button class="btn btn-secondary" type="button" name="button" @click="showEditItem(item.id, item.userWorkName, item.userImageURL, item.userAuthor, item.userPortfolioLink)" v-if="isSignedIn === true">Edit</button>
+                  <button class="btn btn-danger" type="button" name="button" @click='deleteItem(item.id)'>Delete</button>
+                </div>
+              </div>
             </div>
           </li>
         </ul>
       </div>
 
-      <div class="editItems" id="editItem">
-        <input type="text" placeholder="Name (of work)" id="userWorkNameReplace"> <br>
-        <input type="url" placeholder="imageURL" id="imageURLReplace"> <br>
-        <input type="text" placeholder="Author" id="authorReplace"> <br>
-        <input type="url" placeholder="Link To Site/Portfolio" id="portfolioLinkReplace"> <br>
-        <button @click="editItem">Edit Item</button>
+      <div class="editItems form-control" id="editItem">
+        <div class="container-fluid d-flex justify-content-center">
+          <div class="">
+            <input class="form-control" type="text" placeholder="Name (of work)" id="userWorkNameReplace"> <br>
+            <input class="form-control" type="url" placeholder="imageURL" id="imageURLReplace"> <br>
+            <input class="form-control" type="text" placeholder="Author" id="authorReplace"> <br>
+            <input class="form-control" type="url" placeholder="Link To Site/Portfolio" id="portfolioLinkReplace"> <br>
+            <button class="btn btn-primary" @click="editItem">Edit Item</button>
+          </div>
+        </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -63,11 +86,14 @@ import Vue from 'vue'
 import db from '../firebase.js'
 import firebase from 'firebase'
 import toastr from 'toastr'
+import bootstrap from 'bootstrap'
+import fontawesome from 'fontawesome'
 require('firebase/auth')
 
 // Console log to satisfy linter
 console.log(db + Vue)
-
+console.log(bootstrap)
+console.log(fontawesome)
 // setting jquery to $ var
 var $ = require('jquery')
 
@@ -86,7 +112,8 @@ export default {
       isSignedIn: false,
       errorMessage: '',
       items: false,
-      editObj: false
+      editObj: false,
+      imageUpload: false
     }
   },
   // Issue with error message remaining on "Have an Account page"
@@ -156,9 +183,10 @@ export default {
     }, // Signout ENDS
     // Add item
     addItem: function () {
+      const v = this
       // Grabbing data from the DOM
       var nameOfWork = document.getElementById('userWorkName').value
-      var imageURL = document.getElementById('imageURL').value
+      var imageURL = v.imageUpload
       var author = document.getElementById('author').value
       var portfolioLink = document.getElementById('portfolioLink').value
 
@@ -276,14 +304,37 @@ export default {
     likeItem: function (id, likes) {
       db.collection('showoff').doc(id).update({ likes: likes })
     }, // Like item ENDS
+
+    // Delete item
     deleteItem: function (id) {
       console.log(id)
       db.collection('showoff').doc(id).delete().then(function () {
         console.log('Document successfully deleted!')
+        // Refresh page after deleting item
+        location.reload()
       }).catch(function (error) {
         console.error('Error removing document: ', error)
       })
+    },
+    previewFiles (event) {
+      var v = this
+      console.log(event.target.files[0])
+      const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = error => reject(error)
+      })
+
+      async function Main () {
+        console.log(await toBase64(event.target.files[0]))
+        v.imageUpload = await toBase64(event.target.files[0])
+        console.log(v.imageUpload)
+      }
+
+      Main()
     }
+
   },
   // When application is loaded it will grab the items from firebase
   mounted () {
@@ -331,6 +382,7 @@ ul {
 li {
   display: inline-block;
   margin: 0 10px;
+  width: 240px;
 }
 a {
   color: #42b983;
@@ -338,34 +390,23 @@ a {
 #login, #content {
   display: none;
 }
-
+.btn {
+  margin: 5px;
+}
 .showItem {
-  background-color: #fa695f;
+  background-color: lightgrey;
   width: 100%;
-  padding: 5%;
-  border-radius: 0.25em;
+  padding-bottom: 10px;
+  border-radius: 0.45em;
+  margin-top: 20px;
 }
-
-input {
-  border-radius: 0px;
-  border: 1px solid darkgrey;
-  padding: 1% 2%;
-  margin: 0.5%;
-  font-size: 1.2em;
-  width: 40%;
+.thumbnail-image {
+    width: 240px; /* You can set the dimensions to whatever you want */
+    height: 240px;
+    object-fit: cover;
+    border-top-left-radius: 0.45em;
+    border-top-right-radius: 0.45em;
 }
-
-button {
-  background-color: white;
-  border-radius: 0px;
-  border: 1px solid darkgrey;
-  cursor: pointer;
-  font-size: 1.2em;
-  padding: 1% 2%;
-  margin: 0.25%;
-  width: 40%;
-}
-
 .editItems {
   width: 100%;
   height: 100vh;
@@ -375,4 +416,9 @@ button {
   background-color: rgba($color: #000000, $alpha: 0.8);
   display: none;
 }
+.items {
+  width: 80%;
+  margin: auto;
+}
+@import'~bootstrap/dist/css/bootstrap.css'
 </style>
