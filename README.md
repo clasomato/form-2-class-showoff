@@ -26,7 +26,7 @@ gabriel.billingarcus@gmail.com
 * Solomon Ngaia
 konovi.neo@gmail.com
 
-### Base64 Image Conversion For Database Upload
+## Base64 Image Conversion For Database Upload
 ```
     previewFiles (event) {
       var v = this
