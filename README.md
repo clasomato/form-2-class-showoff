@@ -1,4 +1,31 @@
-# form-2-class-showoff
+# Portfolio Gallery - Group Project
+A simple application built with vue.js and firebase, to display users portfolio items in a gallery and provide links to developers portfolio websites.
+## Description
+This was a student group project. We desinged an application using vue.js and firebase, to view portfolio items, upload images and link usrrs to future portolio websites. Throughout the project we used agile design principles.
+## Getting Started
+### Dependencies
+Solomon's plugins and libraries
+### Installing
+* Clone or download the showoff repo onto desktop
+* Install all plugins from package.json file
+### Executing program
+###### Run the following command prompts in the route directory
+* Install the required plugins
+```
+npm install
+```
+* Open the application
+```
+npm run serve
+```
+## Project Members
+* Jason Climo
+jason@climostudios.online
+* Gabriel Arcus
+gabriel.billingarcus@gmail.com
+* Solomon Ngaia
+konovi.neo@gmail.com
+
 ### Base64 Image Conversion For Database Upload
 ```
     previewFiles (event) {
